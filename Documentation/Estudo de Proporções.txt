@@ -22,3 +22,15 @@ Centro: (x,y)(28;15)
 Quadricula de disparar Mothership:
       x [-106: 158] 264 comprimento
       y [-60: 90] 150 altura
+
+Tamanho do Rectângulo gigante:
+
+
+____________________________________________________
+
+O centro do jogo está a 1/12screen.width +screen.width/2
+1/2screen.height+ screen.height/2. 
+
+Os limites da play area: 
+screen.width/6-
+
