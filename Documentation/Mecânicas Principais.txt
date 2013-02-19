@@ -8,6 +8,7 @@ cada esquilo tem de ter:
     -> vigia (idle)
     -> ataca inimigos (atacar)
     -> apanha bolotas (colleccionar)
+<<<<<<< HEAD
     
 Eliminei o estado de defesa, mais vale criar unidades lentas e juicy. A diferença entre atacar e defender é meramente velocidade.
 
@@ -25,6 +26,10 @@ Alguns upgrades que sugiro são:
 	-Collector,
 	-Medic,
 	-Bruiser
+=======
+    -> defender
+    
+>>>>>>> e90f8d2729b7fa8ea7cf516e6170352a3f753e55
 
  um path automático
  habilidade de disparar contra inimigos
@@ -37,7 +42,11 @@ Alguns upgrades que sugiro são:
  forma de fazer deployment aos satélites (gestor dos satélites)
 
 
+<<<<<<< HEAD
 Shooting base (Daniela):
+=======
+Shootig base (Daniela):
+>>>>>>> e90f8d2729b7fa8ea7cf516e6170352a3f753e55
 Não se mexe.
 um disparador tipo puzzle bubble (ricochete ou não eis a questão)
 
