@@ -24,9 +24,9 @@ public class BaseShooter : MonoBehaviour {
 		//value < 0 UP A
 		//value > 0 DOWN Z
 		if (value < 0){
-			transform.Rotate(Vector3.up * Time.deltaTime * -50);
+			transform.Rotate(Vector3.up * -0.60f);
 		}else if (value > 0){
-			transform.Rotate(Vector3.up * Time.deltaTime * 50);
+			transform.Rotate(Vector3.up * 0.60f);
 		}
 			
 	}
