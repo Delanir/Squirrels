@@ -1,0 +1,100 @@
+Vista de lado: fixe para os animadores. Expressões.
+
+Flying squad (Fred):
+(assumimos que são 4)
+
+cada esquilo tem de ter:
+ 3estados:
+    -> vigia (idle)
+    -> ataca inimigos (atacar)
+    -> apanha bolotas (colleccionar)
+<<<<<<< HEAD
+    
+Eliminei o estado de defesa, mais vale criar unidades lentas e juicy. A diferença entre atacar e defender é meramente velocidade.
+
+Tenho que definer prioridades entre atacar e coleccionar. Idle é o estado padrão caso não existam nem perigos, nem bolotas.
+Por agora, uma unidade que possa ter estes 3 comportamentos terá as seguintes prioridades:
+	Idle->Collect->Attack
+    
+Usar padrão decorator, para criar unidades com caracteristicas diferentes através do sistema de upgrades.
+
+Alguns upgrades que sugiro são:
+	-Normal
+	-Fast
+	-Heavy,
+	-Kamikaze,
+	-Collector,
+	-Medic,
+	-Bruiser
+=======
+    -> defender
+    
+>>>>>>> e90f8d2729b7fa8ea7cf516e6170352a3f753e55
+
+ um path automático
+ habilidade de disparar contra inimigos
+ 
+->  energy bar (é aumentada quando a base manda bolotas)
+->  overcharge faz upgrade
+->  temporary upgrade
+
+
+ forma de fazer deployment aos satélites (gestor dos satélites)
+
+
+<<<<<<< HEAD
+Shooting base (Daniela):
+=======
+Shootig base (Daniela):
+>>>>>>> e90f8d2729b7fa8ea7cf516e6170352a3f753e55
+Não se mexe.
+um disparador tipo puzzle bubble (ricochete ou não eis a questão)
+
+bala para inimigos(botão lado direito)
+bala para amigos(botão esquerdo)
+
+não nos podemos safar só com a base
+sugestão opcional: pode ter upgrades:
+   dois canhões
+   escudo
+
+hUD or não HUD eis a questão?
+Contentores de acorns enchem e têm o número de nuts.
+Controlo de dano: fumo, detritos.
+
+Esquilo faz load a balas de cor.
+Forma de controlo, selecção de upgrades.
+
+
+
+Bolotas (Hugo):
+-- NO: as bolotas tem de ter uma trajectória que as faça sair pelas laterais
+Andam aleatoriamente pelo ecrã. 
+Bolotas explodem passado algum tempo. Começam a piscar e explodem.
+  
+  Vários tipos de bolota.
+
+
+Waves de inimigos:
+
+Os inimigos tem de ir direitos à base
+
+
+scroll do terreno
+
+template de niveis: 
+   Acorn Meter -> power balance
+   Time trials: chegar ao final do nível com combustível.
+   Cada vez que levas dano perdes acorns.
+   Objectivo encher a barra até ao máximo
+
+   Encher tanques >> aumentas nível de difículdade (os inimigos querem mais bolotas) >> somos capazes de fazer coisas mais fixes
+
+
+--> inimigos diferentes
+--> roleta mortal combat
+
+
+IDEIA: modo de 2 jogadors
+
+

@@ -1,0 +1,36 @@
+dimensões sempre multiplos de 16:9
+
+camara ortogonal
+area total 92
+em termos de tamanho total de unidades:
+width 266
+height 150
+
+y para cima
+x para a direita
+
+reference grid z =0
+
+Layers: z's entre -1 e -9
+
+Quanto mais negativo + para a frente.
+
+Rotações negativas! 
+
+Centro: (x,y)(28;15)
+
+Quadricula de disparar Mothership:
+      x [-106: 158] 264 comprimento
+      y [-60: 90] 150 altura
+
+Tamanho do Rectângulo gigante:
+
+
+____________________________________________________
+
+O centro do jogo está a 1/12screen.width +screen.width/2
+1/2screen.height+ screen.height/2. 
+
+Os limites da play area: 
+screen.width/6-
+
