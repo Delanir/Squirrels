@@ -2,6 +2,11 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+public enum EnemyType{
+	Standard,
+	Pattern
+}
+
 public class EnemyManager : MonoBehaviour {
 
 	LinkedList<Enemy> _enemiesAlive;
@@ -41,8 +46,12 @@ public class EnemyManager : MonoBehaviour {
 		return toreturn;
 	}
 	
-	public int GetDeadEnemies(){
+	public int GetTotalKilledEnemies(){
 		return _enemiesKilled;
+	}
+	
+	public int GetDeadEnemies(){
+		return _enemiesDead.Count;
 	}
 	
 	public int GetEnemiesOnScreen(){
