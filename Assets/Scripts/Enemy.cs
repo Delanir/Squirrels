@@ -36,6 +36,13 @@ public class Enemy : MonoBehaviour {
 		//TODO: Check where enemy is. Behave accordingly.
 	}
 	
+	
+	//Spawn the Enemy
+	public void Spawn(){
+		_alive = true;
+		this.gameObject.renderer.enabled = true;
+	}
+	
 	//Spawn the Enemy
 	public void Spawn(Vector3 startpos, Vector3 dir, float speed){
 		_dir = dir;
@@ -43,7 +50,6 @@ public class Enemy : MonoBehaviour {
 		_alive = true;
 		this.gameObject.renderer.enabled = true;
 		this.transform.position = startpos;
-		//TODO: Add behaviour
 	}
 	
 	public bool IsAlive(){

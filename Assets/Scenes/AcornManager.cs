@@ -81,7 +81,7 @@ public class AcornManager : MonoBehaviour {
 	/// Are any type of acorn available(Not in game ones)?
 	/// </summary>
 	/// <returns>
-	/// The types of acorns that are available in a continuous string (use .contains(type of acorn) to triage).
+	/// The types of acorns that are available in a continuous string (use .contains(type of acorn) to triage it).
 	/// </returns>
 	public string AreAcornAvailable(){
 		string toreturn= "";
@@ -100,7 +100,7 @@ public class AcornManager : MonoBehaviour {
 	/// Are any type of acorn in game (spawned and physically alive)?
 	/// </summary>
 	/// <returns>
-	/// The types of acorns that are in game in a continuous string (use .contains(type of acorn) to triage).
+	/// The types of acorns that are in game in a continuous string (use .contains(type of acorn) to triage it).
 	/// </returns>
 	public string AreAcornsInGame(){
 		string toreturn= "";
@@ -153,12 +153,13 @@ public class AcornManager : MonoBehaviour {
 	public Acorn CreateNewAcorn(AcornType type){
 		//create from prefab. 
 		GameObject newAcorn = (GameObject) Resources.Load("Prefabs/Acorn");
-		if(newAcorn.AddComponent(type.ToString())){
-			Acorn toreturn = (Acorn) newAcorn.GetComponent(type.ToString());
+		string classname = "Acorn"+type.ToString();
+		if(newAcorn.AddComponent(classname)){
+			Acorn toreturn = (Acorn) newAcorn.GetComponent(classname);
 			_acornsList[type][1].AddLast(toreturn);
 			toreturn.Spawned += AcornSpawned;
 			toreturn.Destroyed += AcornDestroyed;
-			newAcorn.name = type.ToString();
+			newAcorn.name = classname;
 			return toreturn;
 		}
 		else{
@@ -168,13 +169,14 @@ public class AcornManager : MonoBehaviour {
 	public Acorn CreateNewAcorn(Vector3 startpos, Vector3 dir, float speed, AcornType type){
 		//create from prefab. 
 		GameObject newAcorn = (GameObject) Resources.Load("Prefabs/Acorn");
-		if(newAcorn.AddComponent(type.ToString())){
-			Acorn toreturn = (Acorn) newAcorn.GetComponent(type.ToString());
+		string classname = "Acorn"+type.ToString();
+		if(newAcorn.AddComponent(classname)){
+			Acorn toreturn = (Acorn) newAcorn.GetComponent(classname);
 			toreturn.Spawned += AcornSpawned;
 			toreturn.Destroyed += AcornDestroyed;
 			toreturn.Spawn(startpos,dir,speed);
 			_acornsList[type][1].AddLast(toreturn);
-			newAcorn.name = type.ToString();
+			newAcorn.name = classname;
 			return toreturn;
 		}
 		else{
@@ -183,13 +185,13 @@ public class AcornManager : MonoBehaviour {
 	}
 	
 	private void AcornSpawned(Acorn spawned){
-		AcornType type = (AcornType) System.Enum.Parse(typeof(AcornType),spawned.gameObject.name);
+		AcornType type = (AcornType) System.Enum.Parse(typeof(AcornType),spawned.gameObject.name.Replace("Acorn",""));
 		_acornsList[type][1].Remove(spawned);
 		_acornsList[type][0].AddLast(spawned);
 	}
 	
 	private void AcornDestroyed(Acorn destroyed){
-		AcornType type = (AcornType) System.Enum.Parse(typeof(AcornType),destroyed.gameObject.name);
+		AcornType type = (AcornType) System.Enum.Parse(typeof(AcornType),destroyed.gameObject.name.Replace("Acorn",""));
 		_acornsList[type][1].Remove(destroyed);
 		_acornsList[type][0].AddLast(destroyed);
 	}

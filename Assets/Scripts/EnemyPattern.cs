@@ -7,9 +7,9 @@ public enum PatternCheckpointType{
 	Directions
 }
 
-public class PatternEnemy : Enemy
+public class EnemyPattern : Enemy
 {
-	List<Vector3> _checkpointList; //list of checkpoints to cover, excluding the starting position!
+	List<Vector3> _checkpointList; //list of checkpoints to cover, including the starting position! Position 0 of runtimes is how long it'll take to from final position back to first (loop)
 	List<float> _runTimes; //list of how long each checkpoint will take (positions type)
 	List<float> _runSpeeds; // list of how long each run will take (directions type)
 	bool  _usingPositions; //dictates whether or not we're using positions, or directions.
@@ -18,6 +18,7 @@ public class PatternEnemy : Enemy
 	Vector3 _currentDir;
 	float _currentSpeed;
 	float _counter = 0;
+	bool _loop = true;
 
 	
 // Use this for initialization
@@ -27,38 +28,42 @@ public class PatternEnemy : Enemy
 	}
 	
 	private bool Checkpoint(){
-		switch(_checkpointType){
-			case PatternCheckpointType.Positions:
-				if(_counter >= _runTimes[_currentCheckpoint]){
-					_currentCheckpoint++;
-					_currentDir = (_checkpointList[_currentCheckpoint] - this.transform.position).normalized;
-					_currentSpeed = ((_checkpointList[_currentCheckpoint] - this.transform.position)/_runTimes[_currentCheckpoint]).sqrMagnitude;
-					_counter = 0;
-					return true;
-				}
+		if(_counter >= _runTimes[_currentCheckpoint]){
+			_currentCheckpoint++;
+			_counter = 0;
+			if(_currentCheckpoint>=_checkpointList.Count)
 				return false;
-			case PatternCheckpointType.Directions:
-				if(_counter >= _runTimes[_currentCheckpoint]){
-					_currentCheckpoint++;
+			switch(_checkpointType){
+				case PatternCheckpointType.Positions:
+					_currentDir = (_checkpointList[_currentCheckpoint] - this.transform.position).normalized;
+					_currentSpeed = ((_checkpointList[_currentCheckpoint] - this.transform.position)/_runTimes[_currentCheckpoint]).magnitude;
+					return true;
+				case PatternCheckpointType.Directions:
 					_currentDir = _checkpointList[_currentCheckpoint].normalized;
 					_currentSpeed = _runSpeeds[_currentCheckpoint];
-					_counter = 0;
 					return true;
-				}
-				return false;
-		default:
-			return false;
+				default:
+					return false;
+			}
 		}
+		return true;
 	}
 	
 	// Update is called once per frame
 	protected override void  Update () {
-		//move the acorn, if it's alive.
+		//move the enemy, if it's alive.
 		if(IsAlive()){
-			this.transform.position = Vector3.Lerp(this.transform.position, _currentDir *_currentSpeed, Time.fixedDeltaTime);
+			this.transform.position = Vector3.Lerp(this.transform.position,this.transform.position+(_currentDir *_currentSpeed), Time.fixedDeltaTime);
 			_counter+=Time.fixedDeltaTime;
-			this.Checkpoint();
-		
+			if(_currentCheckpoint<_checkpointList.Count)
+				Checkpoint();
+			else{
+				if(_loop){
+					_currentCheckpoint=0;
+					Checkpoint();
+				}
+					
+			}
 		}
 	}
 	
@@ -68,14 +73,18 @@ public class PatternEnemy : Enemy
 		float ad; 
 		switch(positionsordirection){
 			case PatternCheckpointType.Positions:
-				ad= 10/_checkpointList.Count;
-				for(int i=0; i<checkpointlist.Count; i++){
-				runtimes.Add(ad);
+				ad= 10/(_checkpointList.Count-1);
+				float temp = 0;
+				for(int i=0; i<(checkpointlist.Count-1); i++){
+					runtimes.Add(ad);
+					temp+=ad;
 				}
+				runtimes.Insert(0,temp/(_checkpointList.Count-1)); //choose the average speed to loop.
 				_runTimes = runtimes;
 				_runSpeeds = new List<float>();
-				_currentDir = (checkpointlist[0]-startpos).normalized;
-				_currentSpeed = ((checkpointlist[0]-startpos)/runtimes[0]).sqrMagnitude;
+				_currentDir = (checkpointlist[1]-startpos).normalized;
+				_currentSpeed = ((checkpointlist[1]-startpos)/runtimes[1]).magnitude;
+				_currentCheckpoint = 1;
 			break;
 			case PatternCheckpointType.Directions:
 				ad=10;
@@ -86,9 +95,11 @@ public class PatternEnemy : Enemy
 				_runTimes = new List<float>();
 				_currentDir = checkpointlist[0];
 				_currentSpeed = runtimes[0];
+				_currentCheckpoint = 0;
 			break;
 		}
-		_currentCheckpoint = 0;
+		
+		base.Spawn();
 	}
 	
 	public void Spawn(Vector3 startpos, List<Vector3> checkpointlist, PatternCheckpointType positionsordirection, List<float> runtimes){
@@ -98,11 +109,11 @@ public class PatternEnemy : Enemy
 		float ad;
 		switch(positionsordirection){
 			case PatternCheckpointType.Positions:
-				ad= 10/_checkpointList.Count;
 				_runTimes = runtimes;
 				_runSpeeds = new List<float>();
-				_currentDir = (checkpointlist[0]-startpos).normalized;
-				_currentSpeed = ((checkpointlist[0]-startpos)/runtimes[0]).sqrMagnitude;
+				_currentDir = (checkpointlist[1]-startpos).normalized;
+				_currentSpeed = ((checkpointlist[1]-startpos)/runtimes[1]).magnitude;
+				_currentCheckpoint = 1;
 			break;
 			case PatternCheckpointType.Directions:
 				ad=10;
@@ -110,9 +121,11 @@ public class PatternEnemy : Enemy
 				_runTimes = new List<float>();
 				_currentDir = checkpointlist[0];
 				_currentSpeed = runtimes[0];
+				_currentCheckpoint = 0;
 			break;
 		}
-		_currentCheckpoint = 0;
+		
+		base.Spawn();
 	}
 	
 	public void Spawn(Vector3 startpos, List<Vector3> checkpointlist, PatternCheckpointType positionsordirection, float globaltime){
@@ -124,13 +137,17 @@ public class PatternEnemy : Enemy
 		switch(positionsordirection){
 			case PatternCheckpointType.Positions:
 				ad= globaltime/_checkpointList.Count;
-				for(int i=0; i<checkpointlist.Count; i++){
+				float temp = 0;
+				for(int i=0; i<(checkpointlist.Count-1); i++){
 					runtimes.Add(ad);
+					temp+=ad;
 				}
+				runtimes.Insert(0,temp/(_checkpointList.Count-1)); //choose the average speed to loop.
 				_runTimes = runtimes;
 				_runSpeeds = new List<float>();
-				_currentDir = (checkpointlist[0]-startpos).normalized;
-				_currentSpeed = ((checkpointlist[0]-startpos)/runtimes[0]).sqrMagnitude;
+				_currentDir = (checkpointlist[1]-startpos).normalized;
+				_currentSpeed = ((checkpointlist[1]-startpos)/runtimes[1]).magnitude;
+				_currentCheckpoint = 1;
 			break;
 			case PatternCheckpointType.Directions:
 				ad=10;
@@ -138,9 +155,10 @@ public class PatternEnemy : Enemy
 				_runTimes = new List<float>();
 				_currentDir = checkpointlist[0];
 				_currentSpeed = runtimes[0];
+				_currentCheckpoint = 0;
 			break;
 		}
-		_currentCheckpoint = 0;
+		base.Spawn();
 	}
 }
 

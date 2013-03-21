@@ -8,16 +8,32 @@ public enum EnemyType{
 }
 
 public class EnemyManager : MonoBehaviour {
-
-	LinkedList<Enemy> _enemiesAlive;
-	LinkedList<Enemy> _enemiesDead;
+	
+	/// <summary>
+	/// Dictionary referencing all lists of enemies. Each pair being the list of acorns in use and the list of acorns available. 0 and 1 respectively. 
+	/// </summary>
+	Dictionary<EnemyType,LinkedList<Enemy>[]> _enemiesList;
 	float _levelTime = 0;
 	int _enemiesKilled;
 	
 	// Use this for initialization
 	void Start () {
-		_enemiesAlive = new LinkedList<Enemy>();
-		_enemiesDead = new LinkedList<Enemy>();
+		_enemiesList = new Dictionary<EnemyType, LinkedList<Enemy>[]>();
+		LinkedList<Enemy> []enemies = new LinkedList<Enemy>[2];
+		enemies[0] = new LinkedList<Enemy>();
+		enemies[1] = new LinkedList<Enemy>();
+		_enemiesList.Add(EnemyType.Standard, enemies);
+		_enemiesList.Add(EnemyType.Pattern, enemies);
+		EnemyPattern enemypattern = (EnemyPattern) GetEnemyForUse(EnemyType.Pattern);
+		List<Vector3> checkpoints = new List<Vector3>();
+		checkpoints.Add(new Vector3(-76.94447f, -30.57951f,-5));
+		checkpoints.Add(new Vector3(-76.94447f,65.17863f,-5));
+		checkpoints.Add(new Vector3(102.9201f,65.17863f,-5));
+		checkpoints.Add(new Vector3(102.9201f,-50.38702f,-5));
+		checkpoints.Add(new Vector3(171.0704f,-50.38702f,-5));
+		enemypattern.Spawn(new Vector3(-76.94447f, -30.57951f,-5),checkpoints,PatternCheckpointType.Positions,10);
+		
+		//TODO: Perhaps load level specification for an initial number of enemies available. To limit real-time generation.
 	}
 	
 	// Update is called once per frame
@@ -29,64 +45,138 @@ public class EnemyManager : MonoBehaviour {
 		//initialize everything necessary for this level
 	}
 	
-	private Enemy SpawnEnemy(Vector3 startpos, Vector3 dir, float speed){
+	private Enemy SpawnEnemy(Vector3 startpos, Vector3 dir, float speed, EnemyType type){
 		Enemy toreturn = null;
-		if(_enemiesDead.Count>0){
-			return _enemiesDead.First.Value;
+		if(_enemiesList[type][1].Count>0){
+			return _enemiesList[type][1].First.Value;
 			return toreturn;
 		}
 		else{
-			return CreateNewEnemy(startpos, dir,speed);	
+			return CreateNewEnemy(startpos, dir,speed, type);	
 		}
 	}
 	
-	public Enemy GetEnemy(){
-		//TODO: Figure this out.
-		Enemy toreturn = null;
-		return toreturn;
+	public Enemy GetEnemyForUse(EnemyType type){
+		if(_enemiesList[type][1].Count>0){
+			return _enemiesList[type][1].First.Value;
+		}
+		else{
+			return CreateNewEnemy(type);	
+		}
+		
 	}
 	
 	public int GetTotalKilledEnemies(){
 		return _enemiesKilled;
 	}
 	
-	public int GetDeadEnemies(){
-		return _enemiesDead.Count;
+	public int GetEnemiesOnScreen(){
+		int toreturn = 0;
+		foreach(KeyValuePair<EnemyType,LinkedList<Enemy>[]> pair in _enemiesList){
+			toreturn += pair.Value[1].Count;
+		}
+		return toreturn;
 	}
 	
-	public int GetEnemiesOnScreen(){
-		return _enemiesAlive.Count;
+	public int GetDeadEnemies(){
+		int toreturn = 0;
+		foreach(KeyValuePair<EnemyType,LinkedList<Enemy>[]> pair in _enemiesList){
+			toreturn += pair.Value[0].Count;
+		}
+		return toreturn;
+	}
+	
+	public int GetDeadEnemies(EnemyType type){
+		return _enemiesList[type][1].Count;
+	}
+	
+	public int GetEnemiesOnScreen(EnemyType type){
+		return _enemiesList[type][0].Count;
+	}
+	
+		/// <summary>
+	/// Are any type of enemy available(Not in game ones)?
+	/// </summary>
+	/// <returns>
+	/// The types of enemiess that are available in a continuous string (use .contains(type of acorn) to triage it).
+	/// </returns>
+	public string AreEnemiesAvailable(){
+		string toreturn= "";
+		foreach(KeyValuePair<EnemyType,LinkedList<Enemy>[]> pairvalue in _enemiesList){
+			if(pairvalue.Value[1].Count>0)
+				toreturn +=pairvalue.Key.ToString();
+		}
+		if(toreturn.Equals(""))
+			return "none";
+		else{
+			return toreturn;	
+		}
+	}
+	
+		/// <summary>
+	/// Are any type of enemy in game (spawned and physically alive)?
+	/// </summary>
+	/// <returns>
+	/// The types of enemies that are in game in a continuous string (use .contains(type of acorn) to triage it).
+	/// </returns>
+	public string AreEnemiesInGame(){
+		string toreturn= "";
+		foreach(KeyValuePair<EnemyType,LinkedList<Enemy>[]> pairvalue in _enemiesList){
+			if(pairvalue.Value[0].Count>0)
+				toreturn +=pairvalue.Key.ToString();
+		}
+		if(toreturn.Equals(""))
+			return "none";
+		else{
+			return toreturn;	
+		}
 	}
 	
 	//Creation & Destruction services(Not working for as long as we don't have a prefab).
-	public Enemy CreateNewEnemy(){
+	public Enemy CreateNewEnemy(EnemyType type){
 		//create from prefab. 
-		GameObject newAcorn = (GameObject) Resources.Load("Prefabs/Enemy");
-		Enemy toreturn = newAcorn.GetComponent<Enemy>();
-		_enemiesAlive.AddLast(toreturn);
-		toreturn.Spawned += EnemySpawned;
-		toreturn.Destroyed += EnemyDestroyed;
-		return toreturn;
+		GameObject newEnemy = (GameObject) Instantiate(Resources.Load("Prefabs/Enemy"));
+		string classname = "Enemy"+type.ToString();
+		if(newEnemy.AddComponent(classname)){
+			Enemy toreturn = (Enemy) newEnemy.GetComponent(classname);
+			_enemiesList[type][1].AddLast(toreturn);
+			toreturn.Spawned += EnemySpawned;
+			toreturn.Destroyed += EnemyDestroyed;
+			newEnemy.name = classname;
+			return toreturn;
+		}
+		else{
+			return null;	
+		}
 	}
-	public Enemy CreateNewEnemy(Vector3 startpos, Vector3 dir, float speed){
+	public Enemy CreateNewEnemy(Vector3 startpos, Vector3 dir, float speed, EnemyType type){
 		//create from prefab. 
-		GameObject newEnemy = (GameObject) Resources.Load("Prefabs/Enemy");
-		Enemy toreturn = newEnemy.GetComponent<Enemy>();
-		toreturn.Spawn(startpos,dir,speed);
-		_enemiesAlive.AddLast(toreturn);
-		toreturn.Spawned += EnemySpawned;
-		toreturn.Destroyed += EnemyDestroyed;
-		return toreturn;
+		GameObject newEnemy = (GameObject) Instantiate(Resources.Load("Prefabs/Enemy"));
+		string classname = "Enemy"+type.ToString();
+		if(newEnemy.AddComponent(classname )){
+			Enemy toreturn = (Enemy) newEnemy.GetComponent(classname );
+			toreturn.Spawned += EnemySpawned;
+			toreturn.Destroyed += EnemyDestroyed;
+			toreturn.Spawn(startpos,dir,speed);
+			_enemiesList[type][1].AddLast(toreturn);
+			newEnemy.name = classname ;
+			return toreturn;
+		}
+		else{
+			return null;	
+		}
 	}
 	
 	private void EnemySpawned(Enemy spawned){
-		_enemiesDead.Remove(spawned);
-		_enemiesAlive.AddLast(spawned);
+		EnemyType type = (EnemyType) System.Enum.Parse(typeof(EnemyType),spawned.gameObject.name.Replace("Enemy",""));
+		_enemiesList[type][1].Remove(spawned);
+		_enemiesList[type][0].AddLast(spawned);
 	}
 	
 	private void EnemyDestroyed(Enemy destroyed){
-		_enemiesAlive.Remove(destroyed);
-		_enemiesDead.AddLast(destroyed);
+		EnemyType type = (EnemyType) System.Enum.Parse(typeof(EnemyType),destroyed.gameObject.name.Replace("Enemy",""));
+		_enemiesList[type][0].Remove(destroyed);
+		_enemiesList[type][1].AddLast(destroyed);
 		_enemiesKilled++;
 	}
 }
