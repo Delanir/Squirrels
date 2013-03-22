@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 public enum EnemyType{
 	Standard,
-	Pattern
+	Pattern,
+	Homing
 }
 
 public class EnemyManager : MonoBehaviour {
@@ -23,16 +24,15 @@ public class EnemyManager : MonoBehaviour {
 		enemies[0] = new LinkedList<Enemy>();
 		enemies[1] = new LinkedList<Enemy>();
 		_enemiesList.Add(EnemyType.Standard, enemies);
+		enemies = new LinkedList<Enemy>[2];
+		enemies[0] = new LinkedList<Enemy>();
+		enemies[1] = new LinkedList<Enemy>();
 		_enemiesList.Add(EnemyType.Pattern, enemies);
-		EnemyPattern enemypattern = (EnemyPattern) GetEnemyForUse(EnemyType.Pattern);
-		List<Vector3> checkpoints = new List<Vector3>();
-		checkpoints.Add(new Vector3(-76.94447f, -30.57951f,-5));
-		checkpoints.Add(new Vector3(-76.94447f,65.17863f,-5));
-		checkpoints.Add(new Vector3(102.9201f,65.17863f,-5));
-		checkpoints.Add(new Vector3(102.9201f,-50.38702f,-5));
-		checkpoints.Add(new Vector3(171.0704f,-50.38702f,-5));
-		enemypattern.Spawn(new Vector3(-76.94447f, -30.57951f,-5),checkpoints,PatternCheckpointType.Positions,10);
-		
+		enemies = new LinkedList<Enemy>[2];
+		enemies[0] = new LinkedList<Enemy>();
+		enemies[1] = new LinkedList<Enemy>();
+		_enemiesList.Add(EnemyType.Homing, enemies);
+		InitializeLevel(); //currently for testing.	
 		//TODO: Perhaps load level specification for an initial number of enemies available. To limit real-time generation.
 	}
 	
@@ -43,6 +43,20 @@ public class EnemyManager : MonoBehaviour {
 	
 	public void InitializeLevel(/*level parameters*/){
 		//initialize everything necessary for this level
+		
+		/** Testing Enemy Pattern **/
+		EnemyPattern enemypattern = (EnemyPattern) GetEnemyForUse(EnemyType.Pattern);
+		List<Vector3> checkpoints = new List<Vector3>();
+		checkpoints.Add(new Vector3(-76.94447f, -30.57951f,-5));
+		checkpoints.Add(new Vector3(-76.94447f,65.17863f,-5));
+		checkpoints.Add(new Vector3(102.9201f,65.17863f,-5));
+		checkpoints.Add(new Vector3(102.9201f,-50.38702f,-5));
+		checkpoints.Add(new Vector3(171.0704f,-50.38702f,-5));
+		enemypattern.Spawn(new Vector3(-76.94447f, -30.57951f,-5),checkpoints,PatternCheckpointType.Positions,10);
+		
+		/** Testing Enemy Homing **/
+		EnemyHoming enemyhoming = (EnemyHoming) GetEnemyForUse(EnemyType.Homing);
+		enemyhoming.Spawn(new Vector3(141.2f,-57.6f,-5),GameObject.FindGameObjectWithTag("AlliedEntity").transform,0.4f);
 	}
 	
 	private Enemy SpawnEnemy(Vector3 startpos, Vector3 dir, float speed, EnemyType type){
